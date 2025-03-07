@@ -1,0 +1,52 @@
+Zadanie 2.
+Pokaż, że funkcja append zawsze oblicza się do wartości, tzn. pokaż, że dla do-
+wolnych list xs i ys istnieje lista zs taka, że append xs ys ≡ zs.
+
+##############################################3
+
+Tw.
+Dla każdych list xs, ys istnieje lista zs taka, że
+append xs ys = zs
+
+
+Indukcja względem xs.
+
+
+1. Pokażę, że dla każdego ys istnieje lista zs taka, że
+append [] ys = zs
+
+
+(dowód z wykładu !)
+append [] ys = 
+== (def. append)
+ys
+
+
+Zatem istnieje takie zs, że append [] ys = zs, 
+wystarczy wziąć: zs = ys
+
+
+
+2. Załóżmy, że dla każdych list xs, ys istnieje taka lista ys, że
+append xs ys = zs
+Pokażę, że wtedy dla każdych x : 'a, xs : 'a list, ys : 'a list istnieje takie zs': 'a list, że
+append (x :: xs) ys = zs'
+
+let ( @ ) = append
+
+(x :: xs) @ ys =
+== (def. append - z wykładu)
+x :: (xs @ ys)
+== (z zał. ind.)
+x :: zs
+
+Zatem istnieje takie zs', że append xs ys = zs', 
+wystarczy wziąć zs' = x :: zs
+
+
+zatem 
+
+Dla każdych list xs, ys istnieje lista zs taka, że
+append xs ys = zs
+
+cnu

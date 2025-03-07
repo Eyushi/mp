@@ -1,0 +1,137 @@
+(* Zadanie 5. (2 pkt)
+   Zdefiniuj funkcję eval_nnf typu ('a -> bool) -> 'a nnf -> bool interpretującą for-
+   mułę w negacyjnej postaci normalnej, przy zadanym wartościowaniu zmiennych
+   (funkcji typu 'a -> bool). Następnie pokaż, że dla dowolnej formuły φ i war-
+   tościowania σ zachodzi eval_nnf σ (neg_nnf φ) ≡ not (eval_nnf σ φ). Możesz
+   założyć, że funkcja σ zawsze się zatrzymuje. *)
+
+type 'v nnf =
+  | NNFLit of bool * 'v
+  | NNFConj of 'v nnf * 'v nnf
+  | NNFDisj of 'v nnf * 'v nnf
+
+(* ######################################################## *)
+
+z zad 5
+let rec eval_nnf sigma fi =
+  match fi with
+  | NNFLit (bo, zm) -> if bo == false then not (sigma zm) else sigma zm
+  (* Conjunction -- koniunkcja *)
+  | NNFConj (fi, psi) -> eval_nnf sigma fi && eval_nnf sigma psi
+  (* Disjunction -- alternatywa (dysjunkcja) *)
+  | NNFDisj (fi, psi) -> eval_nnf sigma fi || eval_nnf sigma psi
+;;
+
+
+z zad 4
+let rec neg_nnf v1 =
+  match v1 with
+  | NNFLit (bo, zm) -> NNFLit ((if bo then false else true), zm)
+  | NNFConj (v1, v2) -> NNFDisj (neg_nnf v1, neg_nnf v2)
+  | NNFDisj (v1, v2) -> NNFConj (neg_nnf v1, neg_nnf v2)
+;;
+
+##############################################3
+
+
+(funkcja σ zawsze się zatrzymuje.)
+
+Tw.
+Dla dowolnej formuły fi i wartościowania sig zachodzi
+eval_nnf sig (neg_nnf fi) == not (eval_nnf sig fi)
+
+indukcja po formułach
+
+
+1.Weźmy dowolną zmienną z1, oraz literały (tej zmiennej)
+NNFLit(true, z1), NNFLit(false, z1)
+
+Pokażę, że dla zmiennej z1:
+
+eval_nnf sig (neg_nnf NNFLit(false, z1)) = not (eval_nnf sig NNFLit(false, z1))
+
+L:
+eval_nnf sig (neg_nnf NNFLit(false, z1))
+== def. neg_nnf
+eval_nnf sig (NNFLit(true, z1))
+== def eval_nnf
+sig z1
+
+
+
+P:
+not (eval_nnf sig NNFLit(false, z1))
+== def eval_nnf
+not (not sig z1)
+== def not (podwójna negacja)
+sig z1
+
+L = P
+
+
+oraz 
+eval_nnf sig (neg_nnf NNFLit(true, z1)) = not (eval_nnf sig NNFLit(true, z1))
+(dowód analogicznie)
+
+
+
+
+
+2.
+Weźmy dowolne formuły fi, psi oraz dowolne wartościowanie sig i załóżmy,że
+eval_nnf sig (neg_nnf fi) == not (eval_nnf sig fi)
+oraz 
+eval_nnf sig (neg_nnf psi) == not (eval_nnf sig psi)
+
+Udowodnię, że wtedy
+
+eval_nnf sig (neg_nnf NNFConj(fi, psi)) == not (eval_nnf sig NNFConj(fi, psi))
+oraz
+eval_nnf sig (neg_nnf NNFDisj(fi, psi)) == not (eval_nnf sig NNFDisj(fi, psi))
+
+
+
+
+dowód dla koniunkcji:
+eval_nnf sig (neg_nnf NNFConj(fi, psi)) == not (eval_nnf sig NNFConj(fi, psi))
+
+
+L:
+eval_nnf sig (neg_nnf NNFConj(fi, psi))
+== def neg_nnf
+eval_nnf sig ( NNFDisj(neg_nnf fi, neg_nnf psi))
+== def eval_nnf
+eval_nnf sigma (neg_nnf fi) || eval_nnf sigma (neg_nnf psi)
+== zał ind dla fi
+not (eval_nnf sig fi) || eval_nnf sigma (neg_nnf psi)
+== zał ind dla psi
+not (eval_nnf sig fi) || not (eval_nnf sig psi)
+== z praw de Morgana (logika): alternatywa negacji to koniunkcja negacji
+not (eval_nnf sigma fi && eval_nnf sigma psi)
+
+
+
+
+P:
+not (eval_nnf sig NNFConj(fi, psi))
+== def eval_nnf
+not (eval_nnf sigma fi && eval_nnf sigma psi)
+
+
+L = P
+
+
+
+dowód dla alternatywy:
+eval_nnf sig (neg_nnf NNFDisj(fi, psi)) == not (eval_nnf sig NNFDisj(fi, psi))
+(analogicznie)
+
+
+
+
+Zatem
+dla dowolnej formuły fi i wartościowania sig zachodzi
+eval_nnf sig (neg_nnf fi) == not (eval_nnf sig fi)
+
+
+cnu

@@ -1,0 +1,167 @@
+(* Zadanie 7. (2 pkt)
+Zdefiniuj funkcję eval_formula interpretującą formuły z poprzedniego zadania.
+Następnie pokaż, że eval_nnf σ (to_nnf φ) ≡ eval_formula σ φ. Możesz założyć,
+że funkcja σ zawsze się zatrzymuje. *)
+
+
+type 'v formula =
+  | Var of 'v
+  | Neg of 'v formula
+  | Conj of 'v formula * 'v formula
+  | Disj of 'v formula * 'v formula
+
+type 'v nnf =
+  | NNFLit of bool * 'v
+  | NNFConj of 'v nnf * 'v nnf
+  | NNFDisj of 'v nnf * 'v nnf
+
+(* zad 4 *)
+let rec neg_nnf v =
+  match v with
+  | NNFLit (bo, zm) -> NNFLit (not bo, zm)
+  | NNFConj (v1, v2) -> NNFDisj (neg_nnf v1, neg_nnf v2)
+  | NNFDisj (v1, v2) -> NNFConj (neg_nnf v1, neg_nnf v2)
+;;
+
+
+(* ROZWIĄZANIE *)
+let rec to_nnf fi =
+  match fi with
+  | Var p -> NNFLit (true, p)
+  | Neg (psi) -> neg_nnf (to_nnf psi)
+  | Disj (fi, psi) -> NNFDisj (to_nnf fi, to_nnf psi)
+  | Conj (fi, psi) -> NNFConj (to_nnf fi, to_nnf psi)
+;;
+
+(* ################################################# *)
+
+
+
+
+ZASADA INDUKCJI DLA formuł typu 'v formula:
+
+dla każdej własności P,
+
+1. jeśli dla dowolnej zmiennej z1 : 'v      P (z1)
+
+
+2. oraz dla każdych formuł v1 : 'v formula, v2 : 'v formula
+jeśli P(v1), P(v2)
+implikuje
+          P (Neg(v1))
+ORAZ      P (Conj(v1, v2))
+ORAZ      P (Disj(v1, v2))
+
+to dla każdej formuły v3 : 'v formula zachodzi P(v3)
+
+(* ################################################# *)
+
+
+Tw.
+Dla dowolnej formuły fi i wartościowania sig zachodzi
+ eval_nnf sig (to_nnf fi) ≡ eval_formula sig fi.
+
+
+niech P(fi) =  eval_nnf sig (to_nnf fi) ≡ eval_formula sig fi.
+
+
+indukcja po formułach 'v formula
+
+
+1. Udowodnię, że dla dowolnej zmiennej z1
+ eval_nnf sig (to_nnf z1) ≡ eval_formula sig z1
+
+L:
+ eval_nnf sig (to_nnf z1)
+ == def to_nnf
+ eval_nnf sig NNFLit(true, z1)
+ == def eval_nnf
+ sig z1
+ 
+
+ 
+ P:
+ eval_formula sig z1
+ == def eval_formula
+ sig z1
+
+ L = P
+
+
+
+2. Załóżmy, że dla wszystkich formuł fi, psi zachodzi
+ eval_nnf sig (to_nnf fi) ≡ eval_formula sig fi.
+ eval_nnf sig (to_nnf psi) ≡ eval_formula sig psi.
+
+ Udowodnię, że wtedy:
+ P (Neg(v1))
+ORAZ      P (Conj(v1, v2))
+ORAZ      P (Disj(v1, v2))
+
+
+
+                      NEGACJA 
+Weźmy dowolną formułę fi i funkcję sigma
+ eval_nnf sig (to_nnf Neg(fi)) ≡ eval_formula sig Neg(fi).
+
+
+ 
+ 
+ L:
+ eval_nnf sig (to_nnf Neg(fi))
+ == def to_nnf
+ eval_nnf sig (neg_nnf (to_nnf fi))
+ == Dowód z zad 5: eval_nnf σ (neg_nnf φ) ≡ not (eval_nnf σ φ)
+ not (eval_nnf sig (to_nnf fi))
+
+
+
+P:
+eval_formula sig Neg(fi)
+== def eval_formula
+not (eval_formula sig fi)
+== zał ind dla fi
+not (eval_nnf sig (to_nnf fi))
+
+L = P 
+
+
+
+
+                            KONIUNKCJA 
+zał ind:
+ eval_nnf sig (to_nnf fi) ≡ eval_formula sig fi.
+ eval_nnf sig (to_nnf psi) ≡ eval_formula sig psi.
+
+
+
+
+Weźmy dowolne formuły fi, psi i funkcję sig
+
+eval_nnf sig (to_nnf Conj(fi, psi)) ≡ eval_formula sig Conj(fi, psi)
+
+
+
+
+L:
+eval_nnf sig (to_nnf Conj(fi, psi))
+== def to_nnf
+eval_nnf sig (NNFConj (to_nnf fi), (to_nnf psi))
+== def eval_nnf
+eval_nnf sig (to_nnf fi) && eval_nnf sig (to_nnf psi)
+== zał ind dla fi, psi
+eval_formula sig fi && eval_formula sig psi
+
+
+
+P:
+eval_formula sig Conj(fi, psi)
+== def eval_formula
+eval_formula sig fi && eval_formula sig psi
+
+
+L = P
+
+
+dla ALTERNATYWY analogicznie jak dla koniunkcji
+(zamiast && to ||, zamiast Conj to Disj)

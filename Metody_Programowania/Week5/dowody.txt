@@ -1,0 +1,381 @@
+let twice f x = f (f x)
+let compose f g x = f (g x)
+
+Tw.1
+dla każdego h : 'a -> 'a oraz x: 'a, twice h x = compose h h x
+
+Dd
+twice h x
+
+= (def. twice)
+h (f x)
+= (def. compose)
+compose h h x
+
+
+
+let ( << ) = compose
+
+Tw.2
+Łączność składania funkcji
+dla każdego f, g, h, x zachodzi ((f << g) << h) x = (f << (g << h)) x
+
+((f << g) << h) x
+== (def. compose)
+(f << g) (h x)
+== (def. compose)
+f (g (h x))
+== (def. compose)
+f ((g << h) x)
+== (def. compose)
+(f << (g << h)) x
+
+
+
+
+
+######################################################################3
+
+N A T U R A L N E
+
+ZASADA indukcji DLA LICZB NATURALNYCH
+dla każdej własności P,
+jeśli P (0)
+oraz dla każdego k naturalnego P(k) implikuje P(k + 1)
+to dla każdego na naturalnego zachodzi P(n)
+
+
+1 + 2 + 3 + ... + n
+
+n = 5
+
+
+5 + 4 + 3 + 2 + 1 + 0
+
+let rec sumto n =
+  if n = 0 then 0
+  else n + sumto (n - 1)
+
+
+
+Tw. 
+dla każdego n naturalnego zachodzi sumto n == n * (n + 1) / 2
+
+Dd
+1. Pokażę, że zachodzi sumto 0 == 0 * (0 + 1) / 2
+
+sumto 0 
+== (def. sumto)
+0
+== (z zasad arytmetyki)
+0 * (0 + 1) / 2
+
+
+2. Załóżmy, że dla pewnego k naturalnego zachodzi sumto k == k * (k + 1) / 2
+Pokażę, że sumto (k + 1) == (k + 1) * ((k + 1) + 1) / 2
+
+sumto (k + 1) 
+== (def. sumto)
+(k + 1) + sumto (k + 1 - 1)
+== (z zasad arytmetyki)
+(k + 1) + sumto k
+== (z założenia indukcyjnego)
+(k + 1) + k * (k + 1) / 2
+== (z zasad arytmetyki)
+2 * (k + 1) / 2 +  k * (k + 1) / 2
+== (z zasad arytmetyki)
+(k + 2) * (k + 1) / 2
+== (z zasad arytmetyki)
+(k + 1) * ((k + 1) + 1) / 2
+
+  
+  
+
+
+
+
+let sumto_closed n = n * (n + 1) / 2
+
+
+Wniosek: 
+dla każdego n naturalnego, sumto n == sumto_closed n
+
+
+
+let rec fact n =
+  if n = 0 then 1
+  else n * fact (n - 1)
+
+
+
+
+let fact_it acc n =
+  if n = 0 then acc else fact_it (n * acc) (n - 1)
+
+let iter_fact n = fact_it 1 n
+
+
+
+
+Tw.
+dla każdego n naturalnego zachodzi fact n == iter_fact n
+
+
+Wprost się nie da!
+
+
+Potrzebny lemat (by móc korzystać z założenia indukcyjnego)
+
+Lemat: dla każdego n, acc
+fact_it acc n == acc * fact n
+
+indukcja względem liczby n
+
+1. Pokażę, że zachodzi fact_it acc 0 == acc * fact 0
+Weźmy dowolny acc
+
+fact_it acc 0 
+== (def. fact_it)
+acc
+== (z arytmetyki)
+acc * 1
+== (def. fact)
+acc * fact 0
+
+(dwa razy kwantyfikator ogólny)
+2. Dla każdego k, jeśli dla każdego acc zachodzi fact_it acc k == acc  * fact k,
+to dla każdego fact_it acc (k + 1) == acc * fact (k + 1)
+
+
+Weźmy dowolny acc.
+
+fact_it acc (k + 1)
+== (def. fact_it, arytmetyka)
+fact_it (acc * (k + 1)) k
+== (z zał indukcyjnego)
+(acc * (k + 1)) * fact k
+== (Łączność mnożenia)
+acc * ((k + 1) * fact k)
+== (def. fact)
+acc * fact (k + 1)
+
+
+
+
+
+Dowód tw. dla każdego n naturalnego zachodzi fact n == iter_fact na
+
+iter_fact n
+== (def. iter_fact)
+fact_it 1 n
+== (lemat)
+1 * fact n
+== (arytmetyka)
+fact n
+
+
+##########################################################3
+
+
+L I C Z B Y -- Z B I O R Y
+
+
+NASZE LICZBY NATURALNE
+type nat = Z | S of nat
+
+let rec plus a b =
+  match a with
+  | Z -> b
+  | S k -> S (plus k b)
+
+  (to samo:)
+  (| S k -> plus k (S b))
+
+
+Tw. dla każdego k: nat, plus Z k == k
+
+
+plus Z k
+== (def. plus)
+k
+
+
+
+
+ZASADA INDUKNCJI DLA LICZB NATURALNYCH TYPU NAT:
+dla każdej własności P,
+jeśli P(Z)
+oraz dla każdego k naturalnego P(k) implikuje P(S(k))
+to dla każdego na naturalnego zachodzi P(n)
+
+
+Dowód 
+Tw. dla każdego k : nat, plus k Z == k 
+
+1. Pokażę, że plus Z Z == Z
+plus Z Z 
+== (def. plus)
+Z 
+
+
+2. Dla każdego k : nat, jeśli plus k Z == k, to plus (S k) Z == S k 
+
+plus (S k) Z 
+== (def. plus)
+S (plus k Z)
+== (z założenia indukcyjnego)
+S k 
+
+
+
+################################################################################3
+
+
+L I S T Y
+
+
+
+
+type 'a list = [] | (::) 'a * 'a list
+
+
+
+ZASADA INDUKNCJI DLA list typu 'a list:
+dla każdej własności P,
+jeśli P([])
+oraz dla każdego a : 'a, as : 'a list, P(as) implikuje P(a :: as)
+to dla każdej listy as zachodzi P(as)
+
+
+Tw. append [] as == as
+
+append [] as
+== (def. append)
+as
+
+
+Tw. append as [] == as
+
+1. Pokażę, że append [] [] == []
+
+append [] []
+== (def. append)
+[]
+
+
+2. Załóżmy, że append as [] == as, pokażę, że
+dla każdego a zachodzi append (a :: as) [] == a :: as
+
+append (a :: as) []
+== (def. append)
+a :: append as []
+== (z założenia indukcyjnego)
+a :: as
+
+
+
+
+let ( @ ) = append
+
+
+Tw.
+dla każdego xs, ys, zs zachodzi (xs @ ys) @ zs == xs @ (ys @ zs)
+
+Indukcja względem xs.
+
+1. Pokażę, że dla każdego ys, zs zachodzi
+( [] @ ys ) @ zs == [] @ (ys @ zs)
+
+
+( [] @ ys ) @ zs
+== (def. append)
+ys @ zs
+== (def. append)
+ [] (ys @ zs)
+
+
+
+
+ 2. Dla każdego xs, załóżmy, że dla każdego ys, zs
+ zachodzi (xs @ ys) @ zs == xs @ (ys @ zs)
+ Pokażę, że dla każdego x, ys, zs
+ zachodzi ((x :: xs) @ ys) @ zs ==  (x :: xs) @ (ys @ zs)
+
+
+((x :: xs) @ ys) @ zs
+== (def. append)
+(x :: (xs @ ys)) @ zs
+== (def. append)
+x :: ((xs @ ys) @ zs)
+== (z zał. ind.)
+x :: (xs @ (ys @ zs))
+== (z zał. ind.)
+(x :: xs) @ (ys @ zs)
+
+
+
+
+
+
+let rec rev1 xs = match xs with
+  | [] -> []
+  | x :: xs' -> rev1 xs' @ [x]
+
+
+
+
+let rec revapp xs ys = match xs with
+  | [] -> ys
+  | x :: xs' -> revapp xs' (x :: ys)
+
+
+let rev2 = revapp xs []
+
+
+
+
+ 
+
+Tw.
+dla każdego xs, rev1 xs == rev2 xs
+
+
+
+
+
+
+
+
+Lemat: dla każdego ys
+rev1 xs == revapp xs ys
+
+
+
+
+
+todo
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// pisać kroki, co się skąd bierze
+// zakładamy że wszystko jest dobrze otypowane

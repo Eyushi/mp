@@ -1,0 +1,77 @@
+(* Zadanie 8.
+   Zdefiniuj predykat is_sorted : int list -> bool sprawdzający czy lista jest po-
+   sortowana oraz funkcję insert : int -> int list -> int list wstawiającą ele-
+   ment do listy posortowanej. Następnie udowodnij, że jeśli is_sorted xs ≡ true
+   to is_sorted (insert x xs) ≡ true. *)
+
+(* rosnąco, od min do max *)
+let rec is_sorted xs =
+  match xs with
+  | [] -> true
+  | x :: [] -> true
+  | x :: x2 :: xs -> if x > x2 then false else is_sorted (x2 :: xs)
+;;
+
+let rec insert x xs =
+  match xs with
+  | [] -> [ x ]
+  | x1 :: [] -> if x < x1 then [ x; x1 ] else [ x1; x ]
+  | x1 :: x2 :: xs' ->
+    if x < x1
+    then x :: x1 :: xs'
+    else if x < x2
+    then x1 :: x :: x2 :: xs'
+    else insert x (x2 :: xs')
+;;
+
+
+
+
+################################################3
+
+
+Tw.
+dla każdej listy xs i elementu x,
+jeśli is_sorted xs = true, to is_sorted (insert x xs) = true
+
+
+Indukcja względem xs
+
+1. Pokażę, że dla dowolnego x, jeśli is_sorted [] = true,
+to is_sorted (insert x []) = true
+
+
+
+
+is_sorted [] = true
+( z def is_sorted)
+
+is_sorted (insert x []) 
+== def insert
+is_sorted (x :: [])
+== def is_sorted
+true
+
+1.5 dla jedno elementoweej
+2. Weźmy dowolne xs, x i załóżmy, że jeśli is_sorted xs = true,
+to is_sorted (insert x xs) = true.
+Pokażę, że wtedy dla dowolnego z
+jeśli is_sorted (z :: xs) = true, to is_sorted (insert x (z::xs)) = true
+
+
+Załóżmy że is_sorted (z :: xs) = true
+
+
+rozważamy 2 przypadki
+
+
+
+
+
+
+
+
+
+
+
+

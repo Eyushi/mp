@@ -1,0 +1,87 @@
+Zadanie 4.
+Zdefiniuj funkcję neg_nnf typu 'a nnf -> 'a nnf negującą formułę w negacyjnej
+postaci normalnej. Następnie pokaż, że neg_nnf (neg_nnf φ) ≡ φ dla dowolnej
+formuły φ.
+
+(not -- neguje)
+
+##############################################3
+
+
+
+type 'v nnf =
+  | NNFLit of bool * 'v
+  | NNFConj of 'v nnf * 'v nnf
+  | NNFDisj of 'v nnf * 'v nnf
+
+let rec neg_nnf v1 =
+  match v1 with
+  | NNFLit (bo, zm) -> NNFLit ((if bo then false else true), zm)
+  | NNFConj (v1, v2) -> NNFDisj (neg_nnf v1, neg_nnf v2)
+  | NNFDisj (v1, v2) -> NNFConj (neg_nnf v1, neg_nnf v2)
+;;
+
+##############################################3
+
+
+Tw.
+Dla dowolnej formuły fi
+neg_nnf (neg_nnf fi) == fi
+
+
+
+1.Weźmy dowolną zmienną z1, oraz literały (tej zmiennej)
+NNFLit(true, z1), NNFLit(false, z1)
+
+Pokażę, że dla zmiennej z1:
+
+neg_nnf (neg_nnf NNFLit(true, z1)) == NNFLit(true, z1)
+
+L:
+neg_nnf (neg_nnf NNFLit(true, z1))
+== def neg_nnf
+neg_nnf NNFLit(false, z1)
+== def neg_nnf
+NNFLit(true z1)
+
+L = P
+
+oraz
+neg_nnf (neg_nnf NNFLit(false, z1)) == NNFLit(false, z1)
+(analogicznie)
+
+
+
+
+2. Weźmy dowolne formuły fi : 'v nnf, psi : 'v nnf i załóżmy, że
+neg_nnf (neg_nnf fi) == fi oraz
+neg_nnf (neg_nnf psi) == psi
+
+Udowodnię, że wtedy
+
+neg_nnf (neg_nnf NNFConj(fi, psi)) == NNFConj(fi, psi)
+oraz
+neg_nnf (neg_nnf NNFDisj(fi, psi)) == NNFConj(fi, psi)
+
+
+
+L:
+neg_nnf (neg_nnf NNFConj(fi, psi))
+== def neg_nnf
+(conj na disj !!)
+neg_nnf (NNFDisj(neg_nnf fi, neg_nnf psi))
+== def neg_nnf
+NNFConj(neg_nnf(neg_nnf fi), neg_nnf(neg_nnf psi))
+== zał indukcji
+NNFConj(fi, psi)
+
+L = P
+
+analogicznie dla NNFDisj(fi, psi)
+neg_nnf (neg_nnf NNFDisj(fi, psi)) == NNFConj(fi, psi)
+
+
+
+Zatem
+Dla dowolnej formuły fi
+neg_nnf (neg_nnf fi) == fi

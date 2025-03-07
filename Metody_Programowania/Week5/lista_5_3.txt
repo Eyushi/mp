@@ -1,0 +1,54 @@
+(* Zadanie 3. (2 pkt)
+Formuły w negacyjnej postaci normalnej to takie formuły rachunku zdań, w któ-
+rych wszystkie negacje znajdują się przy zmiennych zdaniowych. Dokładniej,
+formuły w negacyjnej postaci normalnej, składają się z koniunkcji, alternatywy
+i literałów, gdzie literały to zanegowane lub niezanegowane zmienne zdaniowe.
+Takie formuły można opisać następującym typem danych, sparametryzowanym
+typem opisującym zmienne.
+type 'v nnf =
+| NNFLit of bool * 'v
+| NNFConj of 'v nnf * 'v nnf
+| NNFDisj of 'v nnf * 'v nnf
+Flaga boolowska w konstruktorze literału oznacza, czy zmienna jest zanegowana
+(wartość true), czy nie (wartość false). Sformułuj zasadę indukcji dla typu NNF. *)
+
+
+
+type 'v nnf =
+| NNFLit of bool * 'v
+| NNFConj of 'v nnf * 'v nn
+| NNFDisj of 'v nnf * 'v nnf
+
+
+
+
+###############################################################################3
+
+
+ZASADA INDUKCJI DLA formuł typu 'v nnf:
+
+dla każdej własności P,
+
+1. jeśli dla dowolnego literału v1 : NNFLit of bool * 'v P (v1)
+
+(czyli dla dowolnej zmiennej z1 : 'v
+zachodzi P(NNFLit(true, z1)) oraz P(NNFLit(false, z1)))
+
+
+2. oraz dla każdych formuł v1 : 'v nnf, v2 : 'v nnf
+jeśli P(v1), P(v2)
+implikuje P (NNFConj(v1, v2)) ORAZ P (NNFDisj(v1, v2))
+
+to dla każdej formuły v3 : 'v nnf zachodzi P(v3)
+
+
+##########################################################################
+zasada indukcji wykładowcy:
+
+Jeśli 
+Dla każdego P : 'a nnf -> formuła
+Dla każdego b : bool, x : 'a zachodzi (NNFLit b x) oraz
+Dla każdego a, b : 'a nnf P(a) i P(b) implikuje P(NNFConj(a,b)) oraz
+Dla każdego a, b : 'a nnf P(a) i P(b) implikuje P(NNFDisj(a,b))
+
+to implikuje że dla każdego a : 'a nnf zachodzi P(a)

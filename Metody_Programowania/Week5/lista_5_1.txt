@@ -1,0 +1,87 @@
+
+let rec map f = function
+  | [] -> []
+  | x :: xs' -> f x :: map f xs'
+
+
+//to samo, korzystam z map2
+
+let rec map2 f xs =
+  match xs with
+  | [] -> []
+  | x :: xs' -> f x :: map2 f xs'
+
+
+
+Zadanie 1.
+Przypomnij sobie definicję funkcji map. Następnie pokaż, że dla dowolnych funkcji
+f i g oraz listy xs zachodzi
+map f (map g xs) ≡ map (fun x -> f (g x)) xs.
+Możesz założyć, że funkcje f i g poprawnie obliczają się do wartości dla dowolnego
+argumentu.
+
+
+##############################################3
+
+Tw.
+Dla każdych funkcji f g oraz dla każdej listy xs
+zachodzi map f (map g xs) ≡ map (fun x -> f (g x)) xs
+
+
+
+Indukcja względem xs
+
+1. Pokażę że dla każdych funkcji f g zachodzi
+map f (map g []) ≡ map (fun x -> f (g x)) []
+
+L:
+map (fun x -> f (g x)) []
+== (def. map)
+[]
+
+P:
+map f (map g [])
+== (def. map)
+map f []
+== (def. map)
+[]
+
+L = P
+
+
+
+
+2. Dla każdego xs, załóżmy, że dla każdych funkcji f, g
+zachodzi  map f (map g xs) ≡ map (fun x -> f (g x)) xs
+Pokażę, że wtedy dla każdego xs : 'a list, f, g, x : 'a
+zachodzi  map f (map g (x :: xs)) ≡ map (fun x -> f (g x)) (x :: xs)
+
+
+L:
+map f (map g (x :: xs))
+== (def. map)
+map f ((g x) :: map g xs)
+== (def. map)
+f (g x) :: map f (map g xs)
+== (z zał. ind.)
+(f (g x)) :: (map (fun x -> f (g x)) xs)
+
+
+
+
+
+P:
+map (fun x -> f (g x)) (x :: xs)
+== (def. map)
+((fun x -> f (g x)) x) :: (map ((fun x -> f (g x)) xs))
+== (def. fun zaaplikowane do x)
+(f (g x)) :: (map (fun x -> f (g x)) xs)
+
+
+
+L = P
+
+zatem:
+Dla każdych funkcji f g oraz dla każdej listy xs
+zachodzi map f (map g xs) ≡ map (fun x -> f (g x)) xs
+cnu
